@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "image-sanitizer"
+version = "0.1.0"
+description = "Sanitize untrusted images by whitelist-rebuild: clean pixels, vetted metadata, nothing inherited from the input."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+authors = [{ name = "image-sanitizer contributors" }]
+keywords = ["security", "image", "sanitize", "upload", "metadata", "steg-free"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Security",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = ["pillow>=10.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+image-sanitizer = "image_sanitizer.cli:main"
+
+[project.urls]
+Documentation = "https://github.com/image-sanitizer/image-sanitizer#readme"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/image_sanitizer"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
