@@ -1,0 +1,30 @@
+{
+  "_doc": "Expected outcomes for real-world corpus samples. Keys are paths relative to tests/corpus/ (or the IMAGE_SANITIZER_CORPUS root). Values: 'clean', 'any' (default), or a RejectionReason name: UnsupportedFormat, Undecodable, LimitExceeded, MetadataInvalid, SandboxCrash, AuditFailed. The files themselves are gitignored and never committed.",
+  "files": {
+    "crafted/benign-graphic.png": "clean",
+    "crafted/benign-photo.jpg": "clean",
+    "crafted/dimension-bomb.png": "LimitExceeded",
+    "crafted/eicar-trailer-jpeg.jpg": "clean",
+    "crafted/gif-comment-webshell.gif": "clean",
+    "crafted/mpo-concat.jpg": "clean",
+    "crafted/php-after-iend.png": "clean",
+    "crafted/pixel-bomb.png": "LimitExceeded",
+    "crafted/smuggle-raw-profile.png": "clean",
+    "crafted/truncated-garbage.png": "Undecodable",
+    "crafted/webshell-trailer-jpeg.jpg": "clean",
+    "crafted/wrong-extension-gif.png": "clean",
+    "crafted/xmp-jpeg.jpg": "clean",
+    "downloaded/imagetragick-msl.jpg": "UnsupportedFormat",
+    "downloaded/imagetragick-rce1.jpg": "UnsupportedFormat",
+    "downloaded/imagetragick-test.png": "clean",
+    "downloaded/pillow-broken-data-stream.png": "Undecodable",
+    "downloaded/pillow-broken.png": "Undecodable",
+    "downloaded/pillow-decompression-bomb-extents.gif": "SandboxCrash",
+    "downloaded/pillow-decompression-bomb.gif": "LimitExceeded",
+    "downloaded/pillow-hopper-rle8-overflow.bmp": "clean",
+    "downloaded/pillow-invalid-exif.jpg": "clean",
+    "downloaded/pillow-truncated-jpeg.jpg": "Undecodable",
+    "downloaded/webp-cve-2023-4863-bad.webp": "Undecodable",
+    "downloaded/webp-cve-2023-4863-nso.webp": "Undecodable"
+  }
+}

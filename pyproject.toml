@@ -39,3 +39,6 @@ packages = ["src/image_sanitizer"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+markers = [
+    "corpus: real-world samples provided out-of-band via tests/corpus/ or IMAGE_SANITIZER_CORPUS (skips when absent)",
+]

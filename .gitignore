@@ -18,3 +18,8 @@ htmlcov/
 .idea/
 .vscode/
 *.swp
+
+# Real-world malicious corpus — provided out-of-band, never committed.
+# Keep only the in-tree README so the directory exists and documents itself.
+tests/corpus/*
+!tests/corpus/README.md

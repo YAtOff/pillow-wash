@@ -118,6 +118,17 @@ polyglots, smuggle chunks, COM/iCCP carry-overs, bombs, malformed metadata,
 encoder-betrayal fault injection, sandbox crash/timeout injection) plus
 fidelity suites proving bit-exactness — see `tests/`.
 
+**Real-world samples.** Genuinely malicious files are never committed.
+Fill the gitignored `tests/corpus/` with
+`.venv/bin/python scripts/fill_corpus.py all` — `generate` crafts hostile
+inputs locally, `download` fetches SHA-256-pinned published samples
+(ImageTragick PoCs, Pillow regression bombs, CVE-2023-4863 WebP) — or
+point `IMAGE_SANITIZER_CORPUS` at a private directory. `tests/test_corpus.py`
+runs each one under sandboxed isolation, asserting only the two-outcome
+contract — Clean or Rejection — with per-file expectations pinnable in
+`tests/corpus_manifest.json`. The module skips when no samples are
+present, so CI stays green.
+
 Design records: [`CONTEXT.md`](CONTEXT.md) (domain language),
 [`docs/adr/`](docs/adr/) (the three hard-to-reverse decisions),
 [`docs/research-image-sanitizer.md`](docs/research-image-sanitizer.md)
