@@ -1,7 +1,7 @@
 """Real-world corpus: malicious samples provided out-of-band, never committed.
 
 Samples live in ``tests/corpus/`` (gitignored) or wherever
-``IMAGE_SANITIZER_CORPUS`` points — a private samples repo on your disk is
+``PILLOW_WASH_CORPUS`` points — a private samples repo on your disk is
 fine. The module auto-discovers them and skips entirely when none are
 present, so CI without the corpus stays green.
 
@@ -28,21 +28,21 @@ from pathlib import Path
 
 import pytest
 
-import image_sanitizer
-from image_sanitizer import RejectionError, RejectionReason, sanitize
+import pillow_wash
+from pillow_wash import RejectionError, RejectionReason, sanitize
 
 _HERE = Path(__file__).resolve().parent
 _MANIFEST = _HERE / "corpus_manifest.json"
 
 _SKIP_MSG = (
     "no real-world corpus present — drop samples into tests/corpus/ or set "
-    "IMAGE_SANITIZER_CORPUS (see tests/corpus/README.md)"
+    "PILLOW_WASH_CORPUS (see tests/corpus/README.md)"
 )
 
 # The six stable rejection class names, resolved from the public package so
 # the mapping stays in sync as reasons are added (additive-only).
 _REJECTION_CLASSES: dict[str, type[Exception]] = {
-    reason.value: getattr(image_sanitizer, reason.value) for reason in RejectionReason
+    reason.value: getattr(pillow_wash, reason.value) for reason in RejectionReason
 }
 
 _VALID_EXPECTATIONS = {"clean", "any", *_REJECTION_CLASSES}
@@ -50,7 +50,7 @@ _VALID_EXPECTATIONS = {"clean", "any", *_REJECTION_CLASSES}
 
 def _corpus_files() -> list[Path]:
     """All sample files under the corpus root (env var override wins)."""
-    env = os.environ.get("IMAGE_SANITIZER_CORPUS")
+    env = os.environ.get("PILLOW_WASH_CORPUS")
     root = Path(env).expanduser() if env else _HERE / "corpus"
     if root.is_file():
         return [root]
@@ -73,7 +73,7 @@ if not _FILES:
 
 def _corpus_key(path: Path) -> str:
     """Manifest key: path relative to the corpus root, POSIX-style."""
-    env = os.environ.get("IMAGE_SANITIZER_CORPUS")
+    env = os.environ.get("PILLOW_WASH_CORPUS")
     root = Path(env).expanduser() if env else _HERE / "corpus"
     if root.is_file():
         return path.name

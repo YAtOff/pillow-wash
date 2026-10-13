@@ -10,7 +10,7 @@ import io
 import pytest
 from PIL import Image, ImageCms
 
-from image_sanitizer import Limits, MetadataInvalid, RejectionReason, sanitize
+from pillow_wash import Limits, MetadataInvalid, RejectionReason, sanitize
 
 from imgfactory import make_jpeg, make_png
 

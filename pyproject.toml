@@ -3,14 +3,14 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "image-sanitizer"
+name = "pillow-wash"
 version = "0.1.0"
 description = "Sanitize untrusted images by whitelist-rebuild: clean pixels, vetted metadata, nothing inherited from the input."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.10"
-authors = [{ name = "image-sanitizer contributors" }]
+authors = [{ name = "pillow-wash contributors" }]
 keywords = ["security", "image", "sanitize", "upload", "metadata", "steg-free"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -28,17 +28,17 @@ dependencies = ["pillow>=10.0"]
 dev = ["pytest>=8.0"]
 
 [project.scripts]
-image-sanitizer = "image_sanitizer.cli:main"
+pillow-wash = "pillow_wash.cli:main"
 
 [project.urls]
-Documentation = "https://github.com/image-sanitizer/image-sanitizer#readme"
+Documentation = "https://github.com/pillow-wash/pillow-wash#readme"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/image_sanitizer"]
+packages = ["src/pillow_wash"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
 markers = [
-    "corpus: real-world samples provided out-of-band via tests/corpus/ or IMAGE_SANITIZER_CORPUS (skips when absent)",
+    "corpus: real-world samples provided out-of-band via tests/corpus/ or PILLOW_WASH_CORPUS (skips when absent)",
 ]

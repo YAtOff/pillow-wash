@@ -1,4 +1,4 @@
-# Image Sanitizer
+# Pillow Wash
 
 A Python library for the Ingest context: it takes an untrusted image and returns either a Clean image or a Rejection. Nothing else.
 

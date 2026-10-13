@@ -1,4 +1,4 @@
-"""image-sanitizer: clean pixels, vetted metadata, nothing inherited."""
+"""pillow-wash: clean pixels, vetted metadata, nothing inherited."""
 
 from .exceptions import (
     AuditFailed,

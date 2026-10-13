@@ -11,7 +11,7 @@ import io
 import pytest
 from PIL import Image
 
-from image_sanitizer import sanitize
+from pillow_wash import sanitize
 
 from imgfactory import make_jpeg
 
@@ -74,6 +74,6 @@ def test_leading_junk_before_png_magic_is_rejected() -> None:
     src = b"JUNK" + make_png()
     with pytest.raises(Exception) as ei:
         sanitize(src, isolation="none")
-    from image_sanitizer import UnsupportedFormat
+    from pillow_wash import UnsupportedFormat
 
     assert isinstance(ei.value, UnsupportedFormat)

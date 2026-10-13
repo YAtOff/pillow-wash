@@ -1,4 +1,4 @@
-# image-sanitizer
+# pillow-wash
 
 Sanitize untrusted images by **whitelist-rebuild**: decode the pixels, emit a
 brand-new file that inherits **no structure** from the input, and re-attach
@@ -9,7 +9,7 @@ and only two: a **Clean** image, or a **Rejection** with a stable reason.
 There is no pass-through state, no third branch, no "best effort".
 
 ```python
-from image_sanitizer import sanitize
+from pillow_wash import sanitize
 
 result = sanitize(untrusted_bytes)          # sandbox isolation by default
 result.data                                 # Clean bytes
@@ -18,8 +18,8 @@ result.report.actions                       # what was dropped / baked / kept
 ```
 
 ```console
-$ image-sanitizer uploads/ -o clean/        # batch mode
-$ image-sanitizer photo.jpg -o clean.jpg --json
+$ pillow-wash uploads/ -o clean/        # batch mode
+$ pillow-wash photo.jpg -o clean.jpg --json
 ```
 
 ## What it does
@@ -99,8 +99,8 @@ sanitize(data, limits=Limits(max_still_pixels=100_000_000))
 ## CLI
 
 ```console
-$ image-sanitizer in.jpg -o out.jpg [--format png] [--json] [--quiet] [--force] [--in-process]
-$ image-sanitizer uploads/ -o clean/
+$ pillow-wash in.jpg -o out.jpg [--format png] [--json] [--quiet] [--force] [--in-process]
+$ pillow-wash uploads/ -o clean/
 ```
 
 Exit codes: `0` all Clean · `1` at least one Rejection · `2` usage error.
@@ -123,7 +123,7 @@ Fill the gitignored `tests/corpus/` with
 `.venv/bin/python scripts/fill_corpus.py all` — `generate` crafts hostile
 inputs locally, `download` fetches SHA-256-pinned published samples
 (ImageTragick PoCs, Pillow regression bombs, CVE-2023-4863 WebP) — or
-point `IMAGE_SANITIZER_CORPUS` at a private directory. `tests/test_corpus.py`
+point `PILLOW_WASH_CORPUS` at a private directory. `tests/test_corpus.py`
 runs each one under sandboxed isolation, asserting only the two-outcome
 contract — Clean or Rejection — with per-file expectations pinnable in
 `tests/corpus_manifest.json`. The module skips when no samples are
@@ -131,7 +131,7 @@ present, so CI stays green.
 
 Design records: [`CONTEXT.md`](CONTEXT.md) (domain language),
 [`docs/adr/`](docs/adr/) (the three hard-to-reverse decisions),
-[`docs/research-image-sanitizer.md`](docs/research-image-sanitizer.md)
+[`docs/research-pillow-wash.md`](docs/research-pillow-wash.md)
 (threat-model evidence base).
 
 [ADR-0001]: docs/adr/0001-whitelist-rebuild.md

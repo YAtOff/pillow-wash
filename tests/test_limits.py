@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from image_sanitizer import LimitExceeded, Limits, RejectionReason, sanitize
+from pillow_wash import LimitExceeded, Limits, RejectionReason, sanitize
 
 from imgfactory import make_gif, make_png, patch_png_ihdr
 

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import pytest
 
-from image_sanitizer import (
+from pillow_wash import (
     RejectionError,
     RejectionReason,
     Undecodable,

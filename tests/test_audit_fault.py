@@ -10,8 +10,8 @@ import io
 
 import pytest
 
-from image_sanitizer import AuditFailed, RejectionReason, sanitize
-from image_sanitizer import pipeline
+from pillow_wash import AuditFailed, RejectionReason, sanitize
+from pillow_wash import pipeline
 
 from imgfactory import make_png, png_insert_chunk
 

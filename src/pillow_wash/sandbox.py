@@ -6,7 +6,7 @@ wall-clock timeout. A worker that dies, hangs, or is OOM-killed is
 indistinguishable from hostile input: both surface as a SandboxCrash
 Rejection.
 
-Test hook: the environment variable ``IMAGE_SANITIZER_FAULT`` (values
+Test hook: the environment variable ``PILLOW_WASH_FAULT`` (values
 ``exit`` / ``hang``) makes the worker misbehave on purpose; it exists so the
 crash/timeout mappings are observable through the public seam.
 """
@@ -32,7 +32,7 @@ from .report import SanitizedImage
 
 __all__ = ["run_sandboxed"]
 
-_FAULT_ENV = "IMAGE_SANITIZER_FAULT"
+_FAULT_ENV = "PILLOW_WASH_FAULT"
 
 _SUBCLASSES = {
     RejectionReason.UNSUPPORTED_FORMAT: UnsupportedFormat,

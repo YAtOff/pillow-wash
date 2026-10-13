@@ -11,7 +11,7 @@ import json
 import pytest
 from PIL import Image
 
-from image_sanitizer import Isolation, Limits, SanitizedImage, sanitize
+from pillow_wash import Isolation, Limits, SanitizedImage, sanitize
 
 from imgfactory import make_jpeg, make_png
 

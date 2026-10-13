@@ -18,7 +18,7 @@ __all__ = ["main"]
 
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        prog="image-sanitizer",
+        prog="pillow-wash",
         description=(
             "Sanitize untrusted images by whitelist-rebuild: clean pixels, "
             "vetted metadata, nothing inherited from the input."

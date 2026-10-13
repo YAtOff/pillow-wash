@@ -9,7 +9,7 @@ import io
 
 from PIL import Image
 
-from image_sanitizer import Report, SanitizedImage, sanitize
+from pillow_wash import Report, SanitizedImage, sanitize
 
 
 def make_png(size=(8, 6), color=(200, 30, 40)) -> bytes:

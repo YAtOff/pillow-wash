@@ -1,5 +1,5 @@
 {
-  "_doc": "Expected outcomes for real-world corpus samples. Keys are paths relative to tests/corpus/ (or the IMAGE_SANITIZER_CORPUS root). Values: 'clean', 'any' (default), or a RejectionReason name: UnsupportedFormat, Undecodable, LimitExceeded, MetadataInvalid, SandboxCrash, AuditFailed. The files themselves are gitignored and never committed.",
+  "_doc": "Expected outcomes for real-world corpus samples. Keys are paths relative to tests/corpus/ (or the PILLOW_WASH_CORPUS root). Values: 'clean', 'any' (default), or a RejectionReason name: UnsupportedFormat, Undecodable, LimitExceeded, MetadataInvalid, SandboxCrash, AuditFailed. The files themselves are gitignored and never committed.",
   "files": {
     "crafted/benign-graphic.png": "clean",
     "crafted/benign-photo.jpg": "clean",

@@ -1,4 +1,4 @@
-# Image Sanitizer — Attack Vectors, Prior Art, and Metadata Policy (Research)
+# Pillow Wash — Attack Vectors, Prior Art, and Metadata Policy (Research)
 
 Research notes for designing a Python library that decodes untrusted images and re-emits a
 clean, re-built copy preserving visual content and vetted metadata only. All claims are

@@ -1,7 +1,7 @@
 """Slice 12: the Sandbox — default isolation, crash/timeout mappings.
 
 Seam: public `sanitize()` with the default (sandbox) isolation. Faults are
-injected through the documented IMAGE_SANITIZER_FAULT environment hook so
+injected through the documented PILLOW_WASH_FAULT environment hook so
 the worker (a fresh spawned process) actually misbehaves.
 """
 
@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from image_sanitizer import (
+from pillow_wash import (
     Limits,
     RejectionReason,
     SandboxCrash,
@@ -31,23 +31,23 @@ def test_default_isolation_is_sandbox_and_works() -> None:
 
 
 def test_sandbox_crash_maps_to_rejection(monkeypatch) -> None:
-    monkeypatch.setenv("IMAGE_SANITIZER_FAULT", "exit")
+    monkeypatch.setenv("PILLOW_WASH_FAULT", "exit")
     try:
         with pytest.raises(SandboxCrash) as ei:
             sanitize(make_png())
         assert ei.value.reason is RejectionReason.SANDBOX_CRASH
     finally:
-        monkeypatch.delenv("IMAGE_SANITIZER_FAULT")
+        monkeypatch.delenv("PILLOW_WASH_FAULT")
 
 
 def test_sandbox_timeout_maps_to_rejection(monkeypatch) -> None:
-    monkeypatch.setenv("IMAGE_SANITIZER_FAULT", "hang")
+    monkeypatch.setenv("PILLOW_WASH_FAULT", "hang")
     try:
         with pytest.raises(SandboxCrash) as ei:
             sanitize(make_png(), limits=Limits(timeout_seconds=0.5))
         assert "wall clock" in ei.value.detail
     finally:
-        monkeypatch.delenv("IMAGE_SANITIZER_FAULT")
+        monkeypatch.delenv("PILLOW_WASH_FAULT")
 
 
 def test_sandbox_propagates_rejection_reasons() -> None:
@@ -65,7 +65,7 @@ def test_sandbox_rejects_hostile_metadata_too() -> None:
     ex.get_ifd(0x8769)[36867] = "not a timestamp"  # SubIFD: the whitelisted location
     with pytest.raises(Exception) as ei:
         sanitize(make_jpeg(exif=ex.tobytes()))
-    from image_sanitizer import MetadataInvalid
+    from pillow_wash import MetadataInvalid
 
     assert isinstance(ei.value, MetadataInvalid)
 

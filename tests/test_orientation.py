@@ -10,7 +10,7 @@ import io
 
 from PIL import Image, ImageOps
 
-from image_sanitizer import sanitize
+from pillow_wash import sanitize
 
 from imgfactory import make_jpeg, make_png, png_insert_chunk
 

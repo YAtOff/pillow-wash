@@ -304,14 +304,14 @@ def update_manifest(entries: dict[str, str]) -> None:
 
 
 def fetch(url: str) -> bytes:
-    req = urllib.request.Request(url, headers={"User-Agent": "image-sanitizer-corpus"})
+    req = urllib.request.Request(url, headers={"User-Agent": "pillow-wash-corpus"})
     with urllib.request.urlopen(req, timeout=DOWNLOAD_TIMEOUT) as resp:
         return resp.read()
 
 
 def verify(out_root: Path, entries: dict[str, str]) -> int:
     """Run the sandboxed sanitizer over each entry; report mismatches."""
-    from image_sanitizer import RejectionError, sanitize
+    from pillow_wash import RejectionError, sanitize
 
     failures = 0
     print("\nverifying against the sanitizer (sandboxed)...")

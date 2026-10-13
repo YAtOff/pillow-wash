@@ -12,7 +12,7 @@ import re
 import pytest
 from PIL import Image
 
-from image_sanitizer import MetadataInvalid, RejectionReason, sanitize
+from pillow_wash import MetadataInvalid, RejectionReason, sanitize
 
 from imgfactory import make_jpeg, make_png, png_chunks, png_insert_chunk
 

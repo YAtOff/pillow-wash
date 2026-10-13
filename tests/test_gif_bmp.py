@@ -10,7 +10,7 @@ import io
 
 from PIL import Image, ImageSequence
 
-from image_sanitizer import sanitize
+from pillow_wash import sanitize
 
 from imgfactory import make_bmp, make_gif
 

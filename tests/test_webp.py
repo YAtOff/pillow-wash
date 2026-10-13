@@ -10,7 +10,7 @@ import io
 
 from PIL import Image
 
-from image_sanitizer import sanitize
+from pillow_wash import sanitize
 
 
 def webp_chunks(data: bytes) -> list[tuple[bytes, bytes]]:

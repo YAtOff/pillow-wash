@@ -55,11 +55,11 @@ $ .venv/bin/python scripts/fill_corpus.py all
 
 ## Alternative location
 
-Point `IMAGE_SANITIZER_CORPUS` at any directory (or a single file) —
+Point `PILLOW_WASH_CORPUS` at any directory (or a single file) —
 e.g. a private samples checkout you keep outside this repo:
 
 ```console
-$ IMAGE_SANITIZER_CORPUS=~/samples/malicious-images .venv/bin/python -m pytest -m corpus
+$ PILLOW_WASH_CORPUS=~/samples/malicious-images .venv/bin/python -m pytest -m corpus
 ```
 
 ## Ground rules

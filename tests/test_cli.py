@@ -1,6 +1,6 @@
 """Slice 14: the CLI — explicit outputs, batch mode, exit codes, --json.
 
-Seam: `image_sanitizer.cli.main(argv)` (the console-script entry point).
+Seam: `pillow_wash.cli.main(argv)` (the console-script entry point).
 Never mutates in place; exits 0 clean / 1 rejections / 2 usage error.
 """
 
@@ -10,7 +10,7 @@ import json
 
 import pytest
 
-from image_sanitizer.cli import main
+from pillow_wash.cli import main
 
 from imgfactory import make_jpeg, make_png
 
