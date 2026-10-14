@@ -36,6 +36,7 @@ import argparse
 import hashlib
 import io
 import json
+import ssl
 import struct
 import sys
 import urllib.request
@@ -304,8 +305,22 @@ def update_manifest(entries: dict[str, str]) -> None:
 
 
 def fetch(url: str) -> bytes:
+    """GET over TLS, verified against certifi's CA bundle.
+
+    The system trust store can be absent or stale on dev machines;
+    certifi ships a current one so pinned-sample downloads don't
+    die on certificate verification.
+    """
+    try:
+        import certifi
+    except ImportError:
+        raise SystemExit(
+            "downloads need certifi for TLS trust — install dev extras: "
+            "uv pip install --python .venv/bin/python -e '.[dev]'"
+        ) from None
     req = urllib.request.Request(url, headers={"User-Agent": "pillow-wash-corpus"})
-    with urllib.request.urlopen(req, timeout=DOWNLOAD_TIMEOUT) as resp:
+    ctx = ssl.create_default_context(cafile=certifi.where())
+    with urllib.request.urlopen(req, timeout=DOWNLOAD_TIMEOUT, context=ctx) as resp:
         return resp.read()
 
 

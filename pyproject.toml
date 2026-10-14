@@ -25,7 +25,8 @@ classifiers = [
 dependencies = ["pillow>=10.0"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0"]
+# certifi: up-to-date CA bundle for scripts/fill_corpus.py downloads
+dev = ["pytest>=8.0", "certifi"]
 
 [project.scripts]
 pillow-wash = "pillow_wash.cli:main"
