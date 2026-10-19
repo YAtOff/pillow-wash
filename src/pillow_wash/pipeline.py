@@ -62,6 +62,8 @@ def _decode(data: bytes, limits, fmt: str) -> Image.Image:
             raise LimitExceeded(
                 f"{fmt}: dimension {w}x{h} exceeds max_dimension {limits.max_dimension}"
             )
+        if fmt == "TIFF" and frames > 1:
+            raise LimitExceeded("TIFF: multi-page not supported")
         if frames > limits.max_frames:
             raise LimitExceeded(
                 f"{fmt}: {frames} frames exceeds max_frames {limits.max_frames}"
@@ -184,12 +186,29 @@ def _encode_webp(im: Image.Image, wl: _Whitelist) -> bytes:
     return buf.getvalue()
 
 
+def _encode_tiff(im: Image.Image, wl: _Whitelist) -> bytes:
+    # Pillow's TIFF writer re-reads tag_v2 of a TIFF-opened image (resolution, XMP,
+    # IPTC, Photoshop); a plain copy carries pixels and palette only.
+    im = im.copy()
+    im.info.clear()
+    buf = io.BytesIO()
+    im.save(
+        buf,
+        "TIFF",
+        compression="raw",
+        icc_profile=wl.icc,
+        exif=wl.exif if wl.exif else b"",
+    )
+    return buf.getvalue()
+
+
 _ENCODERS = {
     "PNG": _encode_png,
     "JPEG": _encode_jpeg,
     "GIF": _encode_gif,
     "BMP": _encode_bmp,
     "WEBP": _encode_webp,
+    "TIFF": _encode_tiff,
 }
 
 

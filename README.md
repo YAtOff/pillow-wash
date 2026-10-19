@@ -52,10 +52,13 @@ $ pillow-wash photo.jpg -o clean.jpg --json
 
 | In → Out (v1)       | Notes                                              |
 | ------------------- | -------------------------------------------------- |
-| PNG, JPEG, GIF, WebP, BMP | same format out unless `output_format=` is given |
+| PNG, JPEG, GIF, WebP, BMP, TIFF | same format out unless `output_format=` is given |
+
+TIFF is single-page only (multi-page is a `LimitExceeded` rejection) and is
+emitted uncompressed.
 
 SVG, HEIC/AVIF receive a dedicated `UnsupportedFormat` rejection (SVG is a
-document format — a different sanitizer's job); TIFF is deferred.
+document format — a different sanitizer's job).
 
 ## Fidelity contract (Visual Information)
 

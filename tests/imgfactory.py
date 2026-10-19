@@ -26,6 +26,39 @@ def make_bmp(size=(8, 6), color=(200, 30, 40)) -> bytes:
     return buf.getvalue()
 
 
+def make_tiff(size=(8, 6), color=(200, 30, 40), mode="RGB", pages=1) -> bytes:
+    """Little-endian uncompressed TIFF; ``pages > 1`` makes it multi-page."""
+    ims = [Image.new(mode, size, color) for _ in range(pages)]
+    buf = io.BytesIO()
+    kw: dict = {"compression": "raw"}
+    if pages > 1:
+        kw.update(save_all=True, append_images=ims[1:])
+    ims[0].save(buf, "TIFF", **kw)
+    return buf.getvalue()
+
+
+def make_tiff_be(pixels: bytes = b"\x00\x40\x80\xff", size=(2, 2)) -> bytes:
+    """Hand-built big-endian 8-bit grayscale TIFF (Pillow only writes ``II`` for it)."""
+    w, h = size
+    assert len(pixels) == w * h
+    entries = [
+        (256, 3, w),  # ImageWidth
+        (257, 3, h),  # ImageLength
+        (258, 3, 8),  # BitsPerSample
+        (259, 3, 1),  # Compression: none
+        (262, 3, 1),  # Photometric: BlackIsZero
+        (273, 4, 8 + 2 + 9 * 12 + 4),  # StripOffsets
+        (277, 3, 1),  # SamplesPerPixel
+        (278, 3, h),  # RowsPerStrip
+        (279, 4, len(pixels)),  # StripByteCounts
+    ]
+    ifd = struct.pack(">H", len(entries))
+    for tag, typ, val in entries:
+        ifd += struct.pack(">HHI", tag, typ, 1)
+        ifd += struct.pack(">H2x", val) if typ == 3 else struct.pack(">I", val)
+    return b"MM\x00*" + struct.pack(">I", 8) + ifd + struct.pack(">I", 0) + pixels
+
+
 def make_jpeg(size=(8, 6), color=(200, 30, 40), quality=95, **save_kwargs) -> bytes:
     im = Image.new("RGB", size, color)
     buf = io.BytesIO()

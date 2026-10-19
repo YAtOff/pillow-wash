@@ -22,15 +22,12 @@ SVG = b"""<?xml version="1.0"?>
 
 HEIC = b"\x00\x00\x00\x18ftypheic" + b"\x00" * 64
 
-TIFF = b"II*\x00\x08\x00\x00\x00" + b"\x00" * 32
-
 
 @pytest.mark.parametrize(
     ("payload", "name"),
     [
         (SVG, "SVG"),
         (HEIC, "HEIC"),
-        (TIFF, "TIFF"),
     ],
 )
 def test_known_unsupported_formats_are_rejected(payload: bytes, name: str) -> None:

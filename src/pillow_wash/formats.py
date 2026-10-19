@@ -6,10 +6,9 @@ import re
 
 __all__ = ["SUPPORTED_FORMATS", "canonical", "sniff", "unsupported_detail"]
 
-SUPPORTED_FORMATS = ("PNG", "JPEG", "GIF", "WEBP", "BMP")
+SUPPORTED_FORMATS = ("PNG", "JPEG", "GIF", "WEBP", "BMP", "TIFF")
 
 _KNOWN_UNSUPPORTED = {
-    "TIFF": "TIFF is deferred to a later version",
     "SVG": "SVG is a document format, not an image container; out of scope",
     "HEIC": "HEIC/AVIF is out of scope for v1",
 }
@@ -23,6 +22,8 @@ _ALIASES = {
     "webp": "WEBP",
     "bmp": "BMP",
     "dib": "BMP",
+    "tif": "TIFF",
+    "tiff": "TIFF",
 }
 
 _HEIC_BRANDS = {

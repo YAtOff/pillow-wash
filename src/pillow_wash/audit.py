@@ -245,3 +245,139 @@ def _audit_webp(data: bytes, exp: dict) -> None:
 _AUDITORS["GIF"] = _audit_gif
 _AUDITORS["BMP"] = _audit_bmp
 _AUDITORS["WEBP"] = _audit_webp
+
+
+_TIFF_TYPE_SIZE = {1: 1, 2: 1, 3: 2, 4: 4, 5: 8, 6: 1, 7: 1, 8: 2, 9: 4, 10: 8, 11: 4, 12: 8}
+_TIFF_BASELINE_TAGS = {256, 257, 258, 259, 262, 273, 277, 278, 279, 284, 320, 338, 339}
+_TIFF_DATETIME = 306
+_TIFF_STRIP_OFFSETS = 273
+_TIFF_STRIP_COUNTS = 279
+_TIFF_EXIF_IFD = 34665
+_TIFF_ICC = 34675
+_TIFF_DATETIME_ORIGINAL = 36867
+
+
+def _audit_tiff(data: bytes, exp: dict) -> None:
+    """Strict TIFF audit: one IFD, allow-listed tags, every byte accounted for."""
+    if data[:4] == b"II*\x00":
+        bo = "<"
+    elif data[:4] == b"MM\x00*":
+        bo = ">"
+    else:
+        raise AuditViolation("bad TIFF header")
+    if len(data) < 8:
+        raise AuditViolation("truncated TIFF header")
+
+    segments: list[tuple[int, int, str]] = [(0, 8, "header")]
+
+    def read(fmt: str, pos: int):
+        size = struct.calcsize(fmt)
+        if pos < 0 or pos + size > len(data):
+            raise AuditViolation("TIFF structure overruns file")
+        return struct.unpack(bo + fmt, data[pos : pos + size])
+
+    def read_ifd(offset: int, allowed: set[int], what: str) -> dict[int, tuple]:
+        if offset < 8:
+            raise AuditViolation(f"{what} offset {offset} overlaps header")
+        (n,) = read("H", offset)
+        if n == 0:
+            raise AuditViolation(f"{what} has no entries")
+        segments.append((offset, offset + 2 + 12 * n + 4, what))
+        entries: dict[int, tuple] = {}
+        prev_tag = -1
+        for i in range(n):
+            pos = offset + 2 + 12 * i
+            tag, typ, count = read("HHI", pos)
+            if tag not in allowed:
+                raise AuditViolation(f"unexpected tag {tag} in {what}")
+            if tag <= prev_tag:
+                raise AuditViolation(f"{what} tags are not strictly ascending")
+            prev_tag = tag
+            if typ not in _TIFF_TYPE_SIZE:
+                raise AuditViolation(f"tag {tag} has unknown type {typ}")
+            if count == 0:
+                raise AuditViolation(f"tag {tag} has zero count")
+            size = _TIFF_TYPE_SIZE[typ] * count
+            field = pos + 8
+            if size <= 4:
+                if any(data[field + size : field + 4]):
+                    raise AuditViolation(f"tag {tag} has non-zero inline padding")
+                vpos = field
+            else:
+                (vpos,) = read("I", field)
+                if vpos < 8 or vpos + size > len(data):
+                    raise AuditViolation(f"tag {tag} value out of bounds")
+                segments.append((vpos, vpos + size, "value"))
+            entries[tag] = (typ, count, vpos)
+        (next_ifd,) = read("I", offset + 2 + 12 * n)
+        if next_ifd != 0:
+            raise AuditViolation(f"{what}: next-IFD offset must be 0 (single IFD only)")
+        return entries
+
+    def ints(entry: tuple, tag: int) -> tuple[int, ...]:
+        typ, count, vpos = entry
+        if typ not in (3, 4):
+            raise AuditViolation(f"tag {tag} must be SHORT or LONG")
+        return read(("H" if typ == 3 else "I") * count, vpos)
+
+    def timestamp(entry: tuple, tag: int) -> None:
+        typ, count, vpos = entry
+        if typ != 2 or count != 20 or data[vpos + 19] != 0:
+            raise AuditViolation(f"tag {tag} must be a 20-byte ASCII timestamp")
+
+    allowed = set(_TIFF_BASELINE_TAGS)
+    if exp.get("expect_exif"):
+        allowed |= {_TIFF_DATETIME, _TIFF_EXIF_IFD}
+    if exp.get("expect_icc"):
+        allowed.add(_TIFF_ICC)
+
+    (ifd_offset,) = read("I", 4)
+    entries = read_ifd(ifd_offset, allowed, "IFD0")
+
+    for required in (256, 257, 259, 262, _TIFF_STRIP_OFFSETS, _TIFF_STRIP_COUNTS):
+        if required not in entries:
+            raise AuditViolation(f"required tag {required} missing")
+
+    if ints(entries[259], 259) != (1,):
+        raise AuditViolation("compression must be 1 (uncompressed)")
+
+    offsets = ints(entries[_TIFF_STRIP_OFFSETS], _TIFF_STRIP_OFFSETS)
+    counts = ints(entries[_TIFF_STRIP_COUNTS], _TIFF_STRIP_COUNTS)
+    if len(offsets) != len(counts):
+        raise AuditViolation("strip offsets and byte counts differ in number")
+    for off, cnt in zip(offsets, counts):
+        if cnt == 0 or off < 8 or off + cnt > len(data):
+            raise AuditViolation("strip out of bounds")
+        segments.append((off, off + cnt, "strip"))
+
+    if _TIFF_DATETIME in entries:
+        timestamp(entries[_TIFF_DATETIME], _TIFF_DATETIME)
+
+    if _TIFF_EXIF_IFD in entries:
+        typ, count, vpos = entries[_TIFF_EXIF_IFD]
+        if typ != 4 or count != 1:
+            raise AuditViolation("Exif IFD pointer must be one LONG")
+        (exif_offset,) = read("I", vpos)
+        exif_entries = read_ifd(exif_offset, {_TIFF_DATETIME_ORIGINAL}, "Exif IFD")
+        if set(exif_entries) != {_TIFF_DATETIME_ORIGINAL}:
+            raise AuditViolation("Exif IFD must contain exactly tag 36867")
+        timestamp(exif_entries[_TIFF_DATETIME_ORIGINAL], _TIFF_DATETIME_ORIGINAL)
+
+    # Every byte must belong to a structure; the only tolerated gap is the single
+    # zero byte Pillow writes to word-align the value following an odd-length one.
+    segments.sort()
+    pos = 0
+    prev_odd_value = False
+    for start, end, kind in segments:
+        if start < pos:
+            raise AuditViolation(f"overlapping TIFF structures ({kind} at {start})")
+        if start > pos:
+            if not (prev_odd_value and start - pos == 1 and data[pos] == 0):
+                raise AuditViolation(f"uncovered bytes {pos}..{start} in TIFF")
+        pos = end
+        prev_odd_value = kind == "value" and (end - start) % 2 == 1
+    if pos != len(data):
+        raise AuditViolation(f"uncovered bytes {pos}..{len(data)} (trailing data) in TIFF")
+
+
+_AUDITORS["TIFF"] = _audit_tiff

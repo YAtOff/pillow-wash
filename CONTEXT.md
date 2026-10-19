@@ -54,10 +54,10 @@ _Avoid_: metadata preservation, EXIF copy
 ### Inputs
 
 **Supported Format**:
-An input format the library accepts and rebuilds: PNG, JPEG, GIF, WebP, BMP (v1).
+An input format the library accepts and rebuilds: PNG, JPEG, GIF, WebP, BMP, TIFF (single-page only).
 
 **Rejected Format**:
-An input format outside scope that receives a dedicated Rejection: SVG, HEIC/AVIF. TIFF is deferred, not silently mishandled.
+An input format outside scope that receives a dedicated Rejection: SVG, HEIC/AVIF.
 
 **Bomb**:
 An input whose decoded size is disproportionate to its encoded size, bounded by resource limits.
